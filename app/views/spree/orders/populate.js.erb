@@ -1,1 +1,60 @@
-$('#link-to-cart').html("<%= j(link_to_cart) %>");
+// app/views/orders/populate.js.erb
+
+// create the dialog
+var button_clicked = false;
+$('<div id="dialog"></div>')
+  .html("<%= raw(escape_javascript(render(:partial => 'add_dialog', :locals => {:order => @order}))) %>")
+  .dialog({ 
+    title: "Added to Cart", 
+    modal: true, 
+    hide: {effect: "fadeOut", duration: 500}, 
+    autoOpen: false,
+    minWidth: 400
+  }).dialog("open")
+
+// Set up callback for click event outside of the dialog
+$('div.ui-widget-overlay').click(function() {
+  $('div#dialog').dialog("close").dialog("destroy").remove();
+  button_clicked = true;
+})
+
+// Set up callback for click event on view cart button in dialog
+$("button#view_cart_button").click(function() {
+  $('div#dialog').dialog("close").dialog("destroy").remove();
+  button_clicked = true;
+  window.location = "<%= cart_path(@order) %>";
+})
+
+// Set up callback for click event on continue shopping button in dialog
+$('button#continue_shopping_button').click(function() {
+  $('div#dialog').dialog("close").dialog("destroy").remove();
+  button_clicked = true;
+})
+
+// performs the countdown and clicks the continue shopping button when countdown expires
+function dotimes(amount) {
+  if(button_clicked == true) {
+    button_clicked = false;
+    return;
+  }
+  $('button#continue_shopping_button').html("Continue Shopping (" + amount + ")");
+  if (amount == 0 ) {
+    if ( <%= ENV['RAILS_ENV'] == "test" or ENV['RAILS_ENV'] == "cucumber" ? false : true %> ) { 
+      $('button#continue_shopping_button').trigger('click');
+    }
+    return;
+  } else {
+    amount = amount - 1;
+    setTimeout("dotimes(" + amount + ")", 1000);
+  }
+  
+}
+
+// updates the cart info display with the new order info
+$('a[title="Shopping Cart"] span').replaceWith('<span>Shopping&nbsp;Cart&nbsp;' + "<%= escape_javascript(render(:partial => 'shared/cart_info'))%>" + '&nbsp;<img src="/images/cart.png" alt=" " /></span>');
+
+// Fix the stretchbar length
+stretchbar();
+
+// perform the countdown
+dotimes(10);
