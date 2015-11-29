@@ -5,7 +5,7 @@ Gem::Specification.new do |s|
   s.version     = '1.1.1'
   s.summary     = 'Spree AJAX Add to Cart extension'
   s.description = 'When the user adds an item to the cart the system will make an Ajax call to add the item to the cart. Once the item has been added the cart details in the header is updated and an alert box displayed informing the user that the item was added.'
-  s.required_ruby_version = '>= 1.8.8'
+  s.required_ruby_version = '>= 1.8.9'
 
   s.author    = 'Trung Lê'
   s.email     = 'joneslee85@gmail.com'
